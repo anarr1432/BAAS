@@ -1,0 +1,297 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#122d37">
+  <meta name="description" content="حاسبة عربية تعمل دون إنترنت لتحويل الساعات العشرية إلى ساعات ودقائق وثوانٍ، وحساب الأجر حسب سعر الساعة.">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; script-src 'unsafe-inline'; img-src data:; connect-src 'none'; base-uri 'none'; form-action 'none'">
+  <title>حاسبة الساعات والأجر</title>
+  <style>
+    :root{color-scheme:light;--ink:#17323d;--muted:#68777f;--line:#dfe7e8;--accent:#0a7068;--accent-dark:#07584f;--paper:#fff;--bg:#f3f6f5;--error:#ac3030}
+    *{box-sizing:border-box}
+    body{margin:0;background:var(--bg);color:var(--ink);font-family:"Cairo","IBM Plex Sans Arabic",Tahoma,Arial,sans-serif;line-height:1.8;-webkit-font-smoothing:antialiased}
+    button,input{font:inherit}
+    button{cursor:pointer;touch-action:manipulation}
+    button:focus-visible,summary:focus-visible{outline:3px solid #e7a344;outline-offset:4px}
+    .wrap{width:min(1056px,calc(100% - 48px));margin:0 auto}
+    .topbar{display:flex;justify-content:space-between;align-items:center;padding:27px 0;border-bottom:1px solid var(--line);gap:16px}
+    .brand{display:flex;align-items:center;gap:12px;font-weight:700;font-size:16px}
+    .brand-mark{width:40px;height:40px;display:grid;place-items:center;background:var(--ink);border-radius:13px;color:white}
+    .brand-mark svg{width:23px;height:23px}
+    .offline{font-size:12px;color:var(--muted);display:flex;align-items:center;gap:8px}
+    .dot{width:7px;height:7px;border-radius:50%;background:var(--accent)}
+    .intro{padding:37px 0 27px}
+    .eyebrow{font-size:11px;font-weight:700;color:var(--accent);letter-spacing:.05em;margin:0 0 8px}
+    h1{font-size:clamp(29px,4.2vw,41px);line-height:1.5;letter-spacing:-1px;margin:0 0 7px;font-weight:800}
+    .intro p:last-child{margin:0;color:var(--muted);font-size:14px}
+    .layout{display:grid;grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr);gap:22px;align-items:stretch}
+    .card{background:var(--paper);border:1px solid var(--line);border-radius:22px}
+    .form-card{padding:27px}
+    .card-heading{display:flex;align-items:center;gap:10px;margin-bottom:23px}
+    .step{display:grid;place-items:center;border-radius:9px;background:#eef5f3;color:var(--accent);width:30px;height:30px;font-size:12px;font-weight:700;font-family:Arial,sans-serif}
+    h2{font-size:17px;line-height:1.5;margin:0}
+    .field{margin-bottom:23px}
+    label{display:block;font-size:14px;font-weight:700;margin-bottom:8px}
+    .input-shell{position:relative;display:flex;direction:ltr;align-items:center;border:1.5px solid #cdd9da;border-radius:13px;background:#fff;overflow:hidden;transition:border-color .15s,box-shadow .15s}
+    .input-shell:focus-within{border-color:var(--accent);box-shadow:0 0 0 4px #0a706812}
+    .input-shell:has(input[aria-invalid="true"]){border-color:var(--error)}
+    input{border:0;outline:0;background:transparent;min-width:0;width:100%;padding:14px 16px;color:var(--ink);font-family:ui-monospace,"SFMono-Regular",Consolas,monospace;font-size:26px;line-height:1.5;text-align:left;direction:ltr;font-weight:600}
+    input::placeholder{color:#a2afb3;font-size:19px;font-weight:400}
+    .input-unit{direction:rtl;white-space:nowrap;font-size:12px;color:var(--muted);padding:0 16px;border-left:1px solid var(--line)}
+    .hint{font-size:11px;color:var(--muted);margin:7px 0 0;line-height:1.85}
+    .error{color:var(--error);font-size:12px;margin:6px 0 0;line-height:1.7}
+    [hidden]{display:none!important}
+    .optional{font-weight:400;color:var(--muted);font-size:11px;margin-right:4px}
+    .buttons{display:flex;gap:9px;margin-top:25px}
+    .primary{background:var(--accent);color:#fff;border:1px solid var(--accent);border-radius:12px;padding:12px 18px;font-weight:700;font-size:14px;flex:1}
+    .primary:hover{background:var(--accent-dark)}
+    .secondary{border:1px solid var(--line);background:#fff;border-radius:12px;padding:12px 18px;color:var(--ink);font-size:13px}
+    .secondary:hover{background:#f4f7f6}
+    .auto-note{display:flex;align-items:center;justify-content:center;gap:6px;font-size:11px;color:var(--muted);margin:12px 0 0}
+    .auto-note svg{width:14px;height:14px}
+    .result-card{padding:27px;background:#122d37;color:#fff;border-color:#122d37;position:relative;overflow:hidden}
+    .result-card::before{content:"";position:absolute;width:230px;height:230px;left:-170px;top:-90px;border:42px solid #ffffff04;border-radius:50%;pointer-events:none}
+    .result-top{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:19px}
+    .result-top h2{font-size:15px;font-weight:500;color:#d9e5e6}
+    .live-tag{font-size:10px;background:#ffffff0c;border:1px solid #ffffff16;border-radius:30px;padding:2px 10px;color:#c2d8d5}
+    .clock{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin:0}
+    .clock-cell{background:#ffffff08;border:1px solid #ffffff13;border-radius:14px;text-align:center;padding:15px 5px 11px;min-width:0}
+    .clock-value{display:block;font-family:ui-monospace,"SFMono-Regular",Consolas,monospace;font-size:clamp(25px,3.8vw,40px);font-weight:600;line-height:1.4;font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
+    .clock-label{display:block;color:#b3c7cc;font-size:11px;margin-top:3px}
+    .minutes-row{display:flex;justify-content:space-between;align-items:baseline;gap:12px;padding:16px 0 20px;border-bottom:1px solid #ffffff1c;font-size:12px;color:#b9cbd0}
+    .minutes-number{font-family:ui-monospace,"SFMono-Regular",Consolas,monospace;font-size:18px;font-weight:600;color:#e9f4ef;overflow-wrap:anywhere}
+    .minute-unit{color:#b9cbd0;font-size:11px;margin-right:5px}
+    .pay-label{margin:20px 0 3px;font-size:12px;color:#c0d0d4}
+    .pay-line{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;min-height:66px}
+    .pay-value{font-family:ui-monospace,"SFMono-Regular",Consolas,monospace;font-size:clamp(34px,4.5vw,48px);line-height:1.4;letter-spacing:-1px;font-weight:700;color:#b6e7ca;overflow-wrap:anywhere;max-width:100%}
+    .pay-unit{font-size:13px;color:#b6e7ca;white-space:nowrap}
+    .equation{font-size:12px;color:#b7c9cd;min-height:24px;overflow-wrap:anywhere;margin:1px 0 0}
+    .pay-caption{font-size:10px;line-height:1.9;margin:12px 0 0;color:#9eb5bc}
+    .example{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:16px 21px;margin-top:18px;background:#fff;border:1px solid var(--line);border-radius:15px}
+    .example-text{font-size:12px;color:var(--muted)}
+    .example-text strong{color:var(--ink);display:inline-block;margin-left:8px}
+    .example-button{display:inline-flex;align-items:center;gap:7px;background:#eef6f2;border:1px solid #daeae0;border-radius:9px;font-size:12px;font-weight:700;color:var(--accent-dark);padding:7px 13px;white-space:nowrap}
+    .example-button:hover{background:#e2f0e8}
+    .note{padding:21px 0 9px;display:flex;gap:12px;align-items:flex-start;max-width:950px}
+    .note-icon{flex:none;color:var(--accent);margin-top:3px;width:19px;height:19px}
+    .note h3{font-size:12px;margin:0 0 4px}
+    .note p{font-size:11px;color:var(--muted);margin:0;line-height:2}
+    .note strong{font-weight:700;color:#415a63}
+    .footer{display:flex;align-items:center;justify-content:space-between;gap:15px;margin:18px 0 24px;padding-top:16px;border-top:1px solid var(--line);color:var(--muted);font-size:10px}
+    .copy-button{background:none;border:0;color:var(--accent);display:flex;align-items:center;gap:7px;padding:5px 0;font-size:12px;font-weight:700}
+    .copy-button:disabled{opacity:.5;cursor:not-allowed}
+    .copy-button svg{width:16px;height:16px}
+    .sr-only{position:absolute!important;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+    .number{font-family:ui-monospace,"SFMono-Regular",Consolas,monospace;unicode-bidi:isolate}
+    .toast{position:fixed;bottom:25px;left:50%;transform:translateX(-50%);background:var(--ink);color:#fff;padding:12px 22px;border-radius:12px;box-shadow:0 8px 30px #122d372b;font-size:13px;z-index:5;max-width:calc(100% - 30px);text-align:center}
+    @media(max-width:720px){.wrap{width:calc(100% - 32px)}.topbar{padding:19px 0}.brand{font-size:14px;gap:9px}.brand-mark{width:35px;height:35px;border-radius:11px}.offline{font-size:10px;gap:5px}.intro{padding:25px 0 21px}h1{font-size:31px;letter-spacing:-.6px}.intro p:last-child{font-size:12px}.layout{grid-template-columns:1fr;gap:16px}.form-card,.result-card{padding:22px;border-radius:19px}.card-heading{margin-bottom:20px}.field{margin-bottom:19px}.buttons{margin-top:20px}.clock-value{font-size:36px}.clock-cell{padding:12px 5px 9px}.pay-value{font-size:44px}.example{align-items:flex-start;padding:14px 16px;gap:10px}.example-text{font-size:11px}.example-text strong{display:block}.example-button{font-size:11px;padding:7px 10px;margin-top:2px}.note{padding-top:18px}.footer{align-items:flex-start}.footer span{max-width:65%}.minutes-number{font-size:17px}}
+    @media(prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto!important}}
+    @media print{body{background:white}.wrap{width:100%}.topbar{padding:10px 0}.intro{padding:18px 0}.buttons,.auto-note,.example,.copy-button,.toast{display:none!important}.layout{grid-template-columns:1fr 1fr;gap:15px}.form-card,.result-card{padding:18px}.result-card{background:white!important;color:var(--ink);border:1px solid var(--line)}.result-card *{color:var(--ink)!important}.clock-cell{border-color:var(--line)}.minutes-row{border-color:var(--line)}.pay-value{font-size:34px}.clock-value{font-size:28px}.note,.footer{break-inside:avoid}}
+  </style>
+</head>
+<body>
+<div class="wrap">
+  <header class="topbar">
+    <div class="brand"><span class="brand-mark" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><circle cx="12" cy="12" r="8.5"/><path d="M12 7v5l3.2 1.8"/></svg></span><span>حاسبة الساعات والأجر</span></div>
+    <span class="offline"><span class="dot" aria-hidden="true"></span>تعمل دون إنترنت</span>
+  </header>
+  <main>
+    <section class="intro" aria-labelledby="page-title">
+      <p class="eyebrow">من الساعات العشرية إلى وقت واضح</p>
+      <h1 id="page-title">احسب وقتك، واعرف أجرك</h1>
+      <p>أدخل الرقم كما يظهر في التقرير، ثم أضف أجر الساعة لحساب المبلغ المستحق.</p>
+    </section>
+    <div class="layout">
+      <form class="card form-card" id="calculator" novalidate>
+        <div class="card-heading"><span class="step" aria-hidden="true">01</span><h2>بيانات الحسبة</h2></div>
+        <div class="field">
+          <label for="hours">الساعات بالنظام العشري</label>
+          <div class="input-shell"><input id="hours" name="hours" type="text" inputmode="decimal" dir="ltr" value="1.57" placeholder="1.57" maxlength="50" autocomplete="off" spellcheck="false" aria-describedby="hours-hint hours-error" aria-invalid="false"><span class="input-unit">ساعة</span></div>
+          <p class="hint" id="hours-hint">مثلًا: <bdi class="number">1.57</bdi> أو <bdi>١٫٥٧</bdi>؛ لا تكتب الوقت بصيغة <bdi class="number">1:57</bdi>.</p>
+          <p class="error" id="hours-error" hidden></p>
+        </div>
+        <div class="field">
+          <label for="rate">الأجر لكل ساعة <span class="optional">لحساب المبلغ</span></label>
+          <div class="input-shell"><input id="rate" name="rate" type="text" inputmode="decimal" dir="ltr" placeholder="25" maxlength="50" autocomplete="off" spellcheck="false" aria-describedby="rate-hint rate-error" aria-invalid="false"><span class="input-unit">ريال / ساعة</span></div>
+          <p class="hint" id="rate-hint">أدخل المبلغ الذي تتقاضاه عن ساعة عمل واحدة.</p>
+          <p class="error" id="rate-error" hidden></p>
+        </div>
+        <div class="buttons"><button class="primary" type="submit">احسب الآن</button><button class="secondary" id="reset" type="button">مسح</button></div>
+        <p class="auto-note"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><path d="M16 7a6 6 0 0 0-10.7-2M4 13a6 6 0 0 0 10.7 2"/><path d="M5 1v4h4M15 19v-4h-4"/></svg>تُحدَّث النتائج تلقائيًا أثناء الكتابة</p>
+      </form>
+      <section class="card result-card" aria-labelledby="results-title">
+        <div class="result-top"><h2 id="results-title">مدة العمل حسب الرقم المدخل</h2><span class="live-tag">النتيجة</span></div>
+        <div class="clock" role="group" aria-label="المدة بالساعات والدقائق والثواني">
+          <div class="clock-cell"><output class="clock-value" id="out-hours" dir="ltr" for="hours">—</output><span class="clock-label">ساعة</span></div>
+          <div class="clock-cell"><output class="clock-value" id="out-minutes" dir="ltr" for="hours">—</output><span class="clock-label">دقيقة</span></div>
+          <div class="clock-cell"><output class="clock-value" id="out-seconds" dir="ltr" for="hours">—</output><span class="clock-label">ثانية</span></div>
+        </div>
+        <div class="minutes-row"><span>إجمالي الوقت بالدقائق</span><span><output class="minutes-number" id="total-minutes" dir="ltr" for="hours">—</output><span class="minute-unit">دقيقة</span></span></div>
+        <p class="pay-label">المبلغ المستحق</p>
+        <div class="pay-line"><output class="pay-value" id="pay" dir="ltr" for="hours rate">—</output><span class="pay-unit">ريال سعودي</span></div>
+        <p class="equation" id="equation">أدخل أجر الساعة لحساب المبلغ.</p>
+        <p class="pay-caption">المبلغ = الساعات العشرية × أجر الساعة، دون خصومات أو إضافات.<br>تُقرَّب النتيجة المالية إلى منزلتين، والمدة إلى أقرب ثانية.</p>
+      </section>
+    </div>
+    <div class="example"><div class="example-text"><strong>جرّب مثالًا جاهزًا</strong><bdi class="number">1.57</bdi> ساعة، وأجر الساعة <bdi class="number">25</bdi> ريالًا</div><button id="example" class="example-button" type="button">تعبئة المثال <span aria-hidden="true">←</span></button></div>
+    <aside class="note" aria-labelledby="note-title"><svg class="note-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7v1"/></svg><div><h3 id="note-title">لماذا تظهر ثوانٍ في النتيجة؟</h3><p><strong><bdi class="number">1.57</bdi> ساعة تساوي ساعة و34 دقيقة و12 ثانية، وليست ساعة و57 دقيقة.</strong><br>قد يكون التقرير قد قرّب المدة الأصلية؛ فساعة و34 دقيقة تُعرض أحيانًا على شكل <bdi class="number">1.57</bdi>.<br>هذه الحاسبة تعتمد الرقم الذي تدخله، ولا تستطيع استعادة المدة الأصلية قبل تقريبها.</p></div></aside>
+  </main>
+  <footer class="footer"><span>الحسبة داخل متصفحك؛ لا تُرسل المدخلات إلى خادم ولا تحفظها الحاسبة.</span><button class="copy-button" id="copy" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><rect x="8" y="8" width="12" height="13" rx="2"/><path d="M15 8V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h3"/></svg>نسخ النتيجة</button></footer>
+</div>
+<div class="sr-only" id="live-result" role="status" aria-live="polite" aria-atomic="true"></div>
+<div class="toast" id="toast" role="status" hidden></div>
+<noscript><p style="padding:20px;text-align:center">تحتاج الحاسبة إلى تفعيل جافاسكربت في المتصفح كي تعمل.</p></noscript>
+<script>
+'use strict';
+/* Decimal values use integer arithmetic, so payroll is rounded only at the end. */
+function power10(scale) { return 10n ** BigInt(scale); }
+function parseDecimal(value) {
+  let text = String(value).trim()
+    .replace(/[\u200e\u200f\u061c]/g, '')
+    .replace(/[٠-٩]/g, d => String(d.charCodeAt(0) - 0x0660))
+    .replace(/[۰-۹]/g, d => String(d.charCodeAt(0) - 0x06f0))
+    .replace(/[٫,،]/g, '.');
+  if (text === '') return { empty: true };
+  if (!/^(?:\d+(?:\.\d*)?|\.\d+)$/.test(text)) {
+    return { error: 'أدخل رقمًا غير سالب، مثل 1.57، دون فواصل آلاف أو رموز أخرى.' };
+  }
+  if (text.startsWith('.')) text = '0' + text;
+  let [whole, fraction = ''] = text.split('.');
+  whole = whole.replace(/^0+(?=\d)/, '');
+  fraction = fraction.replace(/0+$/, '');
+  if (whole.length > 18 || fraction.length > 12) {
+    return { error: 'الحد المدعوم: 18 رقمًا قبل الفاصلة و12 رقمًا بعدها.' };
+  }
+  const canonical = whole + (fraction ? '.' + fraction : '');
+  return { units: BigInt(whole + fraction), scale: fraction.length, canonical };
+}
+function roundRatio(numerator, denominator) {
+  return (numerator * 2n + denominator) / (2n * denominator);
+}
+function formatDecimal(units, scale, { fixed = false, group = true } = {}) {
+  let text = units.toString().padStart(scale + 1, '0');
+  let whole = scale ? text.slice(0, -scale) : text;
+  let fraction = scale ? text.slice(-scale) : '';
+  if (!fixed) fraction = fraction.replace(/0+$/, '');
+  if (group) whole = whole.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+  return whole + (fraction ? '.' + fraction : '');
+}
+function calculateDuration(hours) {
+  const seconds = roundRatio(hours.units * 3600n, power10(hours.scale));
+  return {
+    hours: seconds / 3600n,
+    minutes: (seconds % 3600n) / 60n,
+    seconds: seconds % 60n,
+    totalMinutes: formatDecimal(hours.units * 60n, hours.scale)
+  };
+}
+function calculateMoney(hours, rate) {
+  const cents = roundRatio(hours.units * rate.units * 100n, power10(hours.scale + rate.scale));
+  return formatDecimal(cents, 2, { fixed: true });
+}
+const $ = id => document.getElementById(id);
+let lastSummary = '';
+let announceTimer;
+let toastTimer;
+function setError(id, error = '') {
+  const el = $(id + '-error');
+  el.textContent = error;
+  el.hidden = !error;
+  $(id).setAttribute('aria-invalid', error ? 'true' : 'false');
+}
+function displayMoneyPlaceholder(message) {
+  $('pay').textContent = '—';
+  $('equation').textContent = message;
+  $('equation').dir = 'rtl';
+}
+function update(announce = true, requireHours = false) {
+  const hours = parseDecimal($('hours').value);
+  const rate = parseDecimal($('rate').value);
+  setError('hours', hours.error || (requireHours && hours.empty ? 'أدخل الساعات العشرية أولًا.' : ''));
+  setError('rate', rate.error || '');
+  clearTimeout(announceTimer);
+  if (hours.empty || hours.error) {
+    ['out-hours', 'out-minutes', 'out-seconds', 'total-minutes'].forEach(id => $(id).textContent = '—');
+    displayMoneyPlaceholder(hours.error ? 'صحّح رقم الساعات لإظهار النتيجة.' : 'أدخل الساعات لبدء الحسبة.');
+    $('copy').disabled = true;
+    lastSummary = '';
+    if (announce) announceTimer = setTimeout(() => { $('live-result').textContent = hours.error || 'أدخل الساعات لبدء الحسبة.'; }, 500);
+    return;
+  }
+  const duration = calculateDuration(hours);
+  $('out-hours').textContent = formatDecimal(duration.hours, 0);
+  $('out-minutes').textContent = duration.minutes.toString().padStart(2, '0');
+  $('out-seconds').textContent = duration.seconds.toString().padStart(2, '0');
+  $('total-minutes').textContent = duration.totalMinutes;
+  let summary = 'الساعات العشرية: ' + hours.canonical + '\n'
+    + 'المدة لأقرب ثانية: ' + duration.hours + ' ساعة، و' + duration.minutes + ' دقيقة، و' + duration.seconds + ' ثانية.\n'
+    + 'إجمالي الدقائق: ' + duration.totalMinutes;
+  if (rate.empty || rate.error) {
+    displayMoneyPlaceholder(rate.error ? 'صحّح أجر الساعة لحساب المبلغ.' : 'أدخل أجر الساعة لحساب المبلغ.');
+  } else {
+    const amount = calculateMoney(hours, rate);
+    $('pay').textContent = amount;
+    $('equation').dir = 'ltr';
+    $('equation').textContent = hours.canonical + ' × ' + rate.canonical + ' = ' + amount;
+    summary += '\nأجر الساعة: ' + rate.canonical + ' ريال سعودي.\n'
+      + 'المبلغ المستحق: ' + amount + ' ريال سعودي.\n'
+      + 'المبلغ محسوب من الساعات المدخلة، دون خصومات أو إضافات.';
+  }
+  lastSummary = summary;
+  $('copy').disabled = Boolean(rate.error);
+  if (announce) announceTimer = setTimeout(() => { $('live-result').textContent = summary; }, 650);
+}
+$('hours').addEventListener('input', () => update());
+$('rate').addEventListener('input', () => update());
+$('calculator').addEventListener('submit', event => {
+  event.preventDefault();
+  update(true, true);
+  if ($('hours').getAttribute('aria-invalid') === 'true') $('hours').focus();
+  else if ($('rate').getAttribute('aria-invalid') === 'true') $('rate').focus();
+});
+$('reset').addEventListener('click', () => {
+  $('hours').value = '';
+  $('rate').value = '';
+  update();
+  $('hours').focus();
+});
+$('example').addEventListener('click', () => {
+  $('hours').value = '1.57';
+  $('rate').value = '25';
+  update();
+});
+function toast(message) {
+  clearTimeout(toastTimer);
+  $('toast').textContent = message;
+  $('toast').hidden = false;
+  toastTimer = setTimeout(() => { $('toast').hidden = true; }, 2800);
+}
+function fallbackCopy(text) {
+  const active = document.activeElement;
+  const field = document.createElement('textarea');
+  field.value = text;
+  field.setAttribute('readonly', '');
+  field.setAttribute('aria-label', 'نتيجة الحسبة للنسخ');
+  field.style.cssText = 'position:fixed;left:-9999px;top:0;';
+  document.body.appendChild(field);
+  field.select();
+  let success = false;
+  try { success = document.execCommand('copy'); } catch (_) {}
+  field.remove();
+  if (active && active.focus) active.focus();
+  return success;
+}
+$('copy').addEventListener('click', async () => {
+  if (!lastSummary) return;
+  let copied = false;
+  if (navigator.clipboard && window.isSecureContext) {
+    try { await navigator.clipboard.writeText(lastSummary); copied = true; } catch (_) {}
+  }
+  if (!copied) copied = fallbackCopy(lastSummary);
+  toast(copied ? 'تم نسخ النتيجة.' : 'تعذّر النسخ التلقائي؛ يمكنك تحديد النتيجة ونسخها يدويًا.');
+});
+update(false);
+</script>
+</body>
+</html>
