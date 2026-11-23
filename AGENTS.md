@@ -11,3 +11,7 @@
 - [Anthropic Agent Skills](https://github.com/anthropics/skills): مكتبة مهارات؛ اختر مهارة محددة حسب المهمة ولا تثبّت المكتبة كاملة.
 - [ui-ux-pro-max](https://www.skills.sh/nextlevelbuilder/ui-ux-pro-max-skill/ui-ux-pro-max): تخطيط تجربة المستخدم وتصميم واجهات الويب والجوال ولوحات التحكم.
 - [web-design-guidelines](https://www.skills.sh/vercel-labs/agent-skills/web-design-guidelines): مراجعة التصميم والتجاوب وإمكانية الوصول وتوثيق الملاحظات.
+
+## لقطات الشاشة المعروضة للمالك
+
+التقط من شاشة الكمبيوتر كل لقطات الشاشة التي تعرضها للمالك، سواء قبل النشر أو في المعاينات والتقارير وأي تسليم آخر. لا تعرض لقطات الجوال أو التابلت؛ اختبارات التجاوب على هذه الأجهزة تستمر داخليًا.
