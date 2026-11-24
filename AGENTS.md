@@ -9,7 +9,7 @@
 - [agent-browser](https://www.skills.sh/vercel-labs/agent-browser/agent-browser): فحص واجهات مشاريعنا في بيئة اختبار مصرح بها، والتحقق من التنقل واللقطات.
 - [hyperframes](https://www.skills.sh/heygen-com/hyperframes/hyperframes): تصميم الموشن والفيديو من HTML، وضبط المشاهد والنصوص العربية.
 - [Anthropic Agent Skills](https://github.com/anthropics/skills): مكتبة مهارات؛ اختر مهارة محددة حسب المهمة ولا تثبّت المكتبة كاملة.
-- [ui-ux-pro-max](https://www.skills.sh/nextlevelbuilder/ui-ux-pro-max-skill/ui-ux-pro-max): تخطيط تجربة المستخدم وتصميم واجهات الويب والجوال ولوحات التحكم.
+- [`ui-ux-pro-max`](https://github.com/nextlevelbuilder/ui-ux-pro-max-skill): استخدمها لاختيار الخطوط والألوان وتدقيق سهولة الاستخدام وإمكانية الوصول.
 - [web-design-guidelines](https://www.skills.sh/vercel-labs/agent-skills/web-design-guidelines): مراجعة التصميم والتجاوب وإمكانية الوصول وتوثيق الملاحظات.
 
 ## لقطات الشاشة المعروضة للمالك
@@ -36,3 +36,12 @@
 شكرًا لمراجعة الرابط.
 متابعةً للتذكرة ESS-210924، أعدنا تقديم طلب توثيق موقع منصة توقيع عبر المركز السعودي للأعمال بناءً على توجيهكم.
 ```
+
+## أدوات التصميم واختبار الواجهات وفحص الكود
+
+- [`frontend-design`](https://raw.githubusercontent.com/anthropics/skills/main/skills/frontend-design/SKILL.md): استخدمها لتصميم واجهات مميزة تحافظ على هوية المشروع وتدعم العربية واتجاه القراءة من اليمين إلى اليسار.
+- [`webapp-testing`](https://raw.githubusercontent.com/anthropics/skills/main/skills/webapp-testing/SKILL.md): استخدمها للتحقق من الواجهات والتفاعلات في نسخة محلية أو تجريبية مأذون بها، ببيانات اصطناعية، مع مراعاة قواعد لقطات الشاشة في هذا المستودع.
+- [Semgrep](https://docs.semgrep.dev/): استخدمه عند توفره لفحص ساكن دفاعي لكود المستودع، ثم راجع النتائج قبل اقتراح الإصلاحات.
+- [CodeQL](https://docs.github.com/en/code-security/concepts/code-scanning/codeql/codeql-code-scanning): استخدمه للتحليل الدفاعي الساكن إذا كان متاحًا ومفعّلًا للمستودع.
+
+هذه مراجع استخدام وليست إثبات تثبيت أو تفعيل. استخدم الأدوات المتاحة والمصرح بها حسب المهمة، وحافظ على الفحوص الحالية. لا تشغّل اختبارات على الإنتاج، ولا ترسل كودًا أو بيانات إلى خدمات فحص خارجية أو تفعّل مسارات فحص جديدة دون تفويض.
